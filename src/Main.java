@@ -1,221 +1,114 @@
 import java.util.Scanner;
 
-public class Main {
+public class Main{
 
     public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int option;
 
-        Scanner input = new Scanner(System.in);
+        do {
+            System.out.println("===== JAVA TOOLBOX =====");
+            System.out.println("1 - Greet me");
+            System.out.println("2 - Area (square or rectangle)");
+            System.out.println("3 - Sum of numbers");
+            System.out.println("4 - Swap demo (pass-by-value)");
+            System.out.println("5 - Box demo (object mutation)");
+            System.out.println("0 - Exit");
+            System.out.print("Choose an option: ");
 
-        final int LIMIT = 10;
+            while (!sc.hasNextInt()) {
+                sc.next();
+                System.out.print("Please enter a number. Choose an option: ");
+            }
+            option = sc.nextInt();
+            System.out.println();
 
-        int[] studentId = new int[LIMIT];
-        String[] studentName = new String[LIMIT];
-        int[] studentAge = new int[LIMIT];
-        String[] studentCourse = new String[LIMIT];
-        double[] studentGrade = new double[LIMIT];
-        boolean[] isEnrolled = new boolean[LIMIT];
+            if (option == 1) {
+                System.out.print("Enter your name: ");
+                String userName = sc.next();
+                System.out.println(greet(userName));
 
-        int total = 0; // number of students currently stored
-        int choice = 0;
+            } else if (option == 2) {
+                System.out.print("Sides (1 = square, 2 = rectangle): ");
+                int shape = sc.nextInt();
 
-        while (choice != 5) {
-
-            System.out.println("\n---- STUDENT INFORMATION SYSTEM ----");
-            System.out.println("1. Add Student");
-            System.out.println("2. View All Students");
-            System.out.println("3. Search Student by ID");
-            System.out.println("4. View Statistics");
-            System.out.println("5. Exit");
-
-            choice = -1;
-            while (choice < 1 || choice > 5) {
-                System.out.print("Choice: ");
-                String line = input.nextLine();
-                try {
-                    choice = Integer.parseInt(line);
-                    if (choice < 1 || choice > 5) {
-                        System.out.println("Input is invalid. Try again.");
-                    }
-                } catch (NumberFormatException e) {
-                    System.out.println("Input is invalid. Try again.");
+                if (shape == 1) {
+                    System.out.print("Enter side length: ");
+                    double side = sc.nextDouble();
+                    System.out.println("Area of square = " + area(side));
+                } else {
+                    System.out.print("Enter length: ");
+                    double len = sc.nextDouble();
+                    System.out.print("Enter width: ");
+                    double wid = sc.nextDouble();
+                    System.out.println("Area of rectangle = " + area(len, wid));
                 }
+
+            } else if (option == 3) {
+                System.out.println("Sum of 4, 8, 15 = " + sum(4, 8, 15));
+                System.out.println("Sum of 2, 4, 6, 8, 10 = " + sum(2, 4, 6, 8, 10));
+
+            } else if (option == 4) {
+                int x = 5, y = 9;
+                System.out.println("Before swap: x = " + x + ", y = " + y);
+                swap(x, y);
+                System.out.println("After swap:  x = " + x + ", y = " + y
+                        + "  (unchanged - Java is pass-by-value)");
+
+            } else if (option == 5) {
+                Box b = new Box();
+                b.value = 10;
+                System.out.println("Before: box.value = " + b.value);
+                addToBox(b, 25);
+                System.out.println("After:  box.value = " + b.value
+                        + "  (changed - the object is shared)");
+
+            } else if (option == 0) {
+                System.out.println("Goodbye!");
+
+            } else {
+                System.out.println("Invalid option, try again.");
             }
 
-            switch (choice) {
+            System.out.println();
 
-                case 1:
-                    if (total >= LIMIT) {
-                        System.out.println("Student list is full. Cannot add more.");
-                        break;
-                    }
+        } while (option != 0);
 
-                    // ID
-                    int id = 0;
-                    boolean validId = false;
-                    while (!validId) {
-                        System.out.print("ID: ");
-                        try {
-                            id = Integer.parseInt(input.nextLine());
-                            validId = true;
-                        } catch (NumberFormatException e) {
-                            System.out.println("Input is invalid. Try again.");
-                        }
-                    }
-
-                    // Name
-                    System.out.print("Name: ");
-                    String name = input.nextLine();
-
-                    // Age
-                    int age = 0;
-                    boolean validAge = false;
-                    while (!validAge) {
-                        System.out.print("Age: ");
-                        try {
-                            age = Integer.parseInt(input.nextLine());
-                            if (age > 0) {
-                                validAge = true;
-                            } else {
-                                System.out.println("Input is invalid. Try again.");
-                            }
-                        } catch (NumberFormatException e) {
-                            System.out.println("Input is invalid. Try again.");
-                        }
-                    }
-
-                    // Course
-                    System.out.print("Course: ");
-                    String course = input.nextLine();
-
-                    // Grade
-                    double grade = 0;
-                    boolean validGrade = false;
-                    while (!validGrade) {
-                        System.out.print("Grade: ");
-                        try {
-                            grade = Double.parseDouble(input.nextLine());
-                            if (grade >= 0 && grade <= 100) {
-                                validGrade = true;
-                            } else {
-                                System.out.println("Input is invalid. Try again.");
-                            }
-                        } catch (NumberFormatException e) {
-                            System.out.println("Input is invalid. Try again.");
-                        }
-                    }
-
-                    // Enrolled
-                    boolean enrolled = false;
-                    boolean validEnrolled = false;
-                    while (!validEnrolled) {
-                        System.out.print("Enrolled? (true/false): ");
-                        String line = input.nextLine().trim();
-                        if (line.equalsIgnoreCase("true") || line.equalsIgnoreCase("false")) {
-                            enrolled = Boolean.parseBoolean(line);
-                            validEnrolled = true;
-                        } else {
-                            System.out.println("Input is invalid. Try again.");
-                        }
-                    }
-
-                    studentId[total] = id;
-                    studentName[total] = name;
-                    studentAge[total] = age;
-                    studentCourse[total] = course;
-                    studentGrade[total] = grade;
-                    isEnrolled[total] = enrolled;
-                    total++;
-
-                    System.out.println("Student added.");
-                    break;
-
-                case 2:
-                    if (total == 0) {
-                        System.out.println("No students yet.");
-                        break;
-                    }
-
-                    for (int i = 0; i < total; i++) {
-                        String standing;
-
-                        if (studentGrade[i] >= 90) {
-                            standing = "Dean's Lister";
-                        } else if (studentGrade[i] >= 75) {
-                            standing = "Passed";
-                        } else {
-                            standing = "Failed";
-                        }
-
-                        System.out.println("\nID: " + studentId[i]);
-                        System.out.println("Name: " + studentName[i]);
-                        System.out.println("Age: " + studentAge[i]);
-                        System.out.println("Course: " + studentCourse[i]);
-                        System.out.println("Grade: " + studentGrade[i]);
-                        System.out.println("Enrolled: " + isEnrolled[i]);
-                        System.out.println("Standing: " + standing);
-                    }
-                    break;
-
-                case 3:
-                    int searchId = 0;
-                    boolean validSearchId = false;
-                    while (!validSearchId) {
-                        System.out.print("Enter ID to search: ");
-                        try {
-                            searchId = Integer.parseInt(input.nextLine());
-                            validSearchId = true;
-                        } catch (NumberFormatException e) {
-                            System.out.println("Input is invalid. Try again.");
-                        }
-                    }
-
-                    boolean found = false;
-                    for (int i = 0; i < total; i++) {
-                        if (studentId[i] == searchId) {
-                            found = true;
-                            System.out.println("\nName: " + studentName[i]);
-                            System.out.println("Age: " + studentAge[i]);
-                            System.out.println("Course: " + studentCourse[i]);
-                            System.out.println("Grade: " + studentGrade[i]);
-                            System.out.println("Enrolled: " + isEnrolled[i]);
-                        }
-                    }
-
-                    if (!found) {
-                        System.out.println("Student not found.");
-                    }
-                    break;
-
-                case 4:
-                    if (total == 0) {
-                        System.out.println("No students yet.");
-                        break;
-                    }
-
-                    double sum = 0;
-                    int topIndex = 0;
-
-                    for (int i = 0; i < total; i++) {
-                        sum = sum + studentGrade[i];
-
-                        if (studentGrade[i] > studentGrade[topIndex]) {
-                            topIndex = i;
-                        }
-                    }
-
-                    double average = sum / total;
-
-                    System.out.println("Total students: " + total);
-                    System.out.println("Average grade: " + average);
-                    System.out.println("Top student: " + studentName[topIndex] + " with " + studentGrade[topIndex]);
-                    break;
-
-                case 5:
-                    System.out.println("Goodbye!");
-                    break;
-            }
-        }
-
-        input.close();
+        sc.close();
     }
+
+    static String greet(String userName) {
+        return "Hello, " + userName + "! Welcome to my Java Toolbox.";
+    }
+
+    static double area(double side) {
+        return Math.pow(side, 2);
+    }
+
+    static double area(double length, double width) {
+        return length * width;
+    }
+
+    static int sum(int... values) {
+        int result = 0;
+        for (int v : values) {
+            result += v;
+        }
+        return result;
+    }
+
+    static void swap(int a, int b) {
+        int hold = a;
+        a = b;
+        b = hold;
+        System.out.println("   (inside swap)  a = " + a + ", b = " + b);
+    }
+
+    static void addToBox(Box b, int amount) {
+        b.value += amount;
+    }
+}
+
+class Box {
+    int value;
 }
