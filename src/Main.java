@@ -2,119 +2,220 @@ import java.util.Scanner;
 
 public class Main {
 
-    private static Scanner input = new Scanner(System.in);
-    private static UserManager manager = new UserManager();
-    private static int nextId = 1;
-
     public static void main(String[] args) {
-        seedSampleUsers();
 
-        boolean running = true;
-        while (running) {
-            showMenu();
-            String choice = input.nextLine().trim();
+        Scanner input = new Scanner(System.in);
 
-            if (choice.equals("1")) {
-                addUser();
-            } else if (choice.equals("2")) {
-                manager.listAll();
-            } else if (choice.equals("3")) {
-                searchUser();
-            } else if (choice.equals("4")) {
-                deleteUser();
-            } else if (choice.equals("5")) {
-                manager.exportAll();
-            } else if (choice.equals("6")) {
-                System.out.println("Goodbye!");
-                running = false;
-            } else {
-                System.out.println("Invalid choice. Please enter 1 to 6.");
+        final int LIMIT = 10;
+
+        int[] studentId = new int[LIMIT];
+        String[] studentName = new String[LIMIT];
+        int[] studentAge = new int[LIMIT];
+        String[] studentCourse = new String[LIMIT];
+        double[] studentGrade = new double[LIMIT];
+        boolean[] isEnrolled = new boolean[LIMIT];
+
+        int total = 0; // number of students currently stored
+        int choice = 0;
+
+        while (choice != 5) {
+
+            System.out.println("\n---- STUDENT INFORMATION SYSTEM ----");
+            System.out.println("1. Add Student");
+            System.out.println("2. View All Students");
+            System.out.println("3. Search Student by ID");
+            System.out.println("4. View Statistics");
+            System.out.println("5. Exit");
+
+            choice = -1;
+            while (choice < 1 || choice > 5) {
+                System.out.print("Choice: ");
+                String line = input.nextLine();
+                try {
+                    choice = Integer.parseInt(line);
+                    if (choice < 1 || choice > 5) {
+                        System.out.println("Input is invalid. Try again.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Input is invalid. Try again.");
+                }
             }
-            System.out.println();
-        }
-    }
 
-    private static void showMenu() {
-        System.out.println("===== USER MANAGEMENT SYSTEM =====");
-        System.out.println("1. Add user");
-        System.out.println("2. List all users");
-        System.out.println("3. Search user by ID");
-        System.out.println("4. Delete user by ID");
-        System.out.println("5. Export all users");
-        System.out.println("6. Exit");
-        System.out.print("Choose an option: ");
-    }
+            switch (choice) {
 
-    private static void addUser() {
-        System.out.println("Type of user:  1 = Admin   2 = Teacher   3 = Student");
-        System.out.print("Choose type: ");
-        String type = input.nextLine().trim();
+                case 1:
+                    if (total >= LIMIT) {
+                        System.out.println("Student list is full. Cannot add more.");
+                        break;
+                    }
 
-        System.out.print("Name: ");
-        String name = input.nextLine().trim();
-        System.out.print("Email: ");
-        String email = input.nextLine().trim();
+                    // ID
+                    int id = 0;
+                    boolean validId = false;
+                    while (!validId) {
+                        System.out.print("ID: ");
+                        try {
+                            id = Integer.parseInt(input.nextLine());
+                            validId = true;
+                        } catch (NumberFormatException e) {
+                            System.out.println("Input is invalid. Try again.");
+                        }
+                    }
 
-        User user;
-        if (type.equals("1")) {
-            user = new Admin(nextId, name, email);
-        } else if (type.equals("2")) {
-            System.out.print("Department: ");
-            String dept = input.nextLine().trim();
-            user = new Teacher(nextId, name, email, dept);
-        } else if (type.equals("3")) {
-            System.out.print("Course: ");
-            String course = input.nextLine().trim();
-            user = new Student(nextId, name, email, course);
-        } else {
-            System.out.println("Unknown type. User was not added.");
-            return;
-        }
+                    // Name
+                    System.out.print("Name: ");
+                    String name = input.nextLine();
 
-        manager.add(user);
-        nextId++;
-    }
+                    // Age
+                    int age = 0;
+                    boolean validAge = false;
+                    while (!validAge) {
+                        System.out.print("Age: ");
+                        try {
+                            age = Integer.parseInt(input.nextLine());
+                            if (age > 0) {
+                                validAge = true;
+                            } else {
+                                System.out.println("Input is invalid. Try again.");
+                            }
+                        } catch (NumberFormatException e) {
+                            System.out.println("Input is invalid. Try again.");
+                        }
+                    }
 
-    private static void searchUser() {
-        System.out.print("Enter ID to search: ");
-        int id = readInt();
-        User found = manager.findById(id);
-        if (found == null) {
-            System.out.println("No user found with ID " + id + ".");
-        } else {
-            System.out.println("Found:");
-            found.display();
-        }
-    }
+                    // Course
+                    System.out.print("Course: ");
+                    String course = input.nextLine();
 
-    private static void deleteUser() {
-        System.out.print("Enter ID to delete: ");
-        int id = readInt();
-        if (manager.deleteById(id)) {
-            System.out.println("User " + id + " was deleted.");
-        } else {
-            System.out.println("No user found with ID " + id + ".");
-        }
-    }
+                    // Grade
+                    double grade = 0;
+                    boolean validGrade = false;
+                    while (!validGrade) {
+                        System.out.print("Grade: ");
+                        try {
+                            grade = Double.parseDouble(input.nextLine());
+                            if (grade >= 0 && grade <= 100) {
+                                validGrade = true;
+                            } else {
+                                System.out.println("Input is invalid. Try again.");
+                            }
+                        } catch (NumberFormatException e) {
+                            System.out.println("Input is invalid. Try again.");
+                        }
+                    }
 
-    private static int readInt() {
-        while (true) {
-            String line = input.nextLine().trim();
-            try {
-                return Integer.parseInt(line);
-            } catch (NumberFormatException e) {
-                System.out.print("That is not a number. Try again: ");
+                    // Enrolled
+                    boolean enrolled = false;
+                    boolean validEnrolled = false;
+                    while (!validEnrolled) {
+                        System.out.print("Enrolled? (true/false): ");
+                        String line = input.nextLine().trim();
+                        if (line.equalsIgnoreCase("true") || line.equalsIgnoreCase("false")) {
+                            enrolled = Boolean.parseBoolean(line);
+                            validEnrolled = true;
+                        } else {
+                            System.out.println("Input is invalid. Try again.");
+                        }
+                    }
+
+                    studentId[total] = id;
+                    studentName[total] = name;
+                    studentAge[total] = age;
+                    studentCourse[total] = course;
+                    studentGrade[total] = grade;
+                    isEnrolled[total] = enrolled;
+                    total++;
+
+                    System.out.println("Student added.");
+                    break;
+
+                case 2:
+                    if (total == 0) {
+                        System.out.println("No students yet.");
+                        break;
+                    }
+
+                    for (int i = 0; i < total; i++) {
+                        String standing;
+
+                        if (studentGrade[i] >= 90) {
+                            standing = "Dean's Lister";
+                        } else if (studentGrade[i] >= 75) {
+                            standing = "Passed";
+                        } else {
+                            standing = "Failed";
+                        }
+
+                        System.out.println("\nID: " + studentId[i]);
+                        System.out.println("Name: " + studentName[i]);
+                        System.out.println("Age: " + studentAge[i]);
+                        System.out.println("Course: " + studentCourse[i]);
+                        System.out.println("Grade: " + studentGrade[i]);
+                        System.out.println("Enrolled: " + isEnrolled[i]);
+                        System.out.println("Standing: " + standing);
+                    }
+                    break;
+
+                case 3:
+                    int searchId = 0;
+                    boolean validSearchId = false;
+                    while (!validSearchId) {
+                        System.out.print("Enter ID to search: ");
+                        try {
+                            searchId = Integer.parseInt(input.nextLine());
+                            validSearchId = true;
+                        } catch (NumberFormatException e) {
+                            System.out.println("Input is invalid. Try again.");
+                        }
+                    }
+
+                    boolean found = false;
+                    for (int i = 0; i < total; i++) {
+                        if (studentId[i] == searchId) {
+                            found = true;
+                            System.out.println("\nName: " + studentName[i]);
+                            System.out.println("Age: " + studentAge[i]);
+                            System.out.println("Course: " + studentCourse[i]);
+                            System.out.println("Grade: " + studentGrade[i]);
+                            System.out.println("Enrolled: " + isEnrolled[i]);
+                        }
+                    }
+
+                    if (!found) {
+                        System.out.println("Student not found.");
+                    }
+                    break;
+
+                case 4:
+                    if (total == 0) {
+                        System.out.println("No students yet.");
+                        break;
+                    }
+
+                    double sum = 0;
+                    int topIndex = 0;
+
+                    for (int i = 0; i < total; i++) {
+                        sum = sum + studentGrade[i];
+
+                        if (studentGrade[i] > studentGrade[topIndex]) {
+                            topIndex = i;
+                        }
+                    }
+
+                    double average = sum / total;
+
+                    System.out.println("Total students: " + total);
+                    System.out.println("Average grade: " + average);
+                    System.out.println("Top student: " + studentName[topIndex] + " with " + studentGrade[topIndex]);
+                    break;
+
+                case 5:
+                    System.out.println("Goodbye!");
+                    break;
             }
         }
-    }
 
-    private static void seedSampleUsers() {
-        manager.add(new Admin(nextId, "Razz", "razz@liceo.edu.ph"));
-        nextId++;
-        manager.add(new Teacher(nextId, "Maria", "maria@liceo.edu.ph", "CIT"));
-        nextId++;
-        manager.add(new Student(nextId, "Ana", "ana@liceo.edu.ph", "BSIT"));
-        nextId++;
-        System.out.println();
+        input.close();
     }
 }
