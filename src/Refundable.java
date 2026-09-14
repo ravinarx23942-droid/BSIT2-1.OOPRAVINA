@@ -1,4 +1,8 @@
-package PACKAGE_NAME;
+public interface Refundable {
 
-public class Refundable {
+    String refund();
+
+    default void printRefundNotice() {
+        System.out.println("   " + refund());
+    }
 }
